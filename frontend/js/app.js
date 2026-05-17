@@ -115,8 +115,6 @@ async function loadConfig() {
         console.warn('Failed to load backend config', e);
     }
 }
-import { saveBookOffline, removeOfflineBook, db } from './db.js';
-
 // Example click handler for your custom "Save for Offline" icon
 async function handleDownloadToggle(bookCard, bookData) {
     const isAlreadyDownloaded = await db.downloadedBooks.get(bookData.id);
