@@ -104,6 +104,7 @@
 
         const banner = document.createElement('div');
         banner.id = 'pwa-install-banner';
+        banner.className = 'pwa-install-banner';
         banner.setAttribute('role', 'banner');
         banner.setAttribute('aria-label', 'Install BiblioDrift app');
         banner.innerHTML = `
@@ -111,7 +112,7 @@
                 <img src="/frontend/assets/images/biblioDrift_favicon.png"
                      alt="BiblioDrift icon" class="pwa-banner-icon">
                 <div class="pwa-banner-text">
-                    <strong>Install BiblioDrift</strong>
+                    <strong>Install BiblioDrift.</strong>
                     <span>Read offline, anytime.</span>
                 </div>
             </div>
@@ -127,7 +128,14 @@
             </div>
         `;
 
-        document.body.appendChild(banner);
+        const footer = document.querySelector(".main-footer");
+        if (footer) {
+            footer.parentNode.insertBefore(banner, footer);
+        } else {
+            const main = document.querySelector("main");
+            if (main) main.appendChild(banner);
+            else document.body.appendChild(banner);
+        }
 
         // Animate in
         requestAnimationFrame(() => banner.classList.add('pwa-banner-visible'));
