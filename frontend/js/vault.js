@@ -1,4 +1,3 @@
-
 // Dexie database instantiation
 const vaultDb = new Dexie("BiblioDriftVaultDB");
 vaultDb.version(4).stores({
