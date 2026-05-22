@@ -1,5 +1,6 @@
 # AI service logic with LLM integration (OpenAI/Gemini)
 # Implements 'generate_book_note' and 'get_ai_recommendations'. All recommendations MUST be AI-based.
+
 # Enhanced with comprehensive caching for expensive operations
 
 
@@ -219,6 +220,25 @@ Rules:
 - Output the JSON array only.
 """
 
+    @staticmethod
+    def get_vibe_check_prompt(vibe_prompt: str, count: int = 3) -> str:
+        """
+        Prompt for generating hyper-personalized vibe-based book recommendations.
+        """
+        return f"""You are Elara, an emotionally intuitive bookseller.
+A reader is looking for books matching this exact hyper-specific vibe or mood: "{vibe_prompt}"
+
+Return exactly {count} real, verifiable books that perfectly capture this energy.
+Output ONLY a valid JSON array. No markdown fences. No text before or after.
+Schema:
+[
+  {{
+    "title": "Exact book title",
+    "author": "Author full name",
+    "reason": "One brilliant, atmospheric sentence explaining why it fits the requested vibe perfectly."
+  }}
+]
+"""
 
 class LLMService:
     """
@@ -779,6 +799,46 @@ def get_category_books(category: str, vibe_description: str, count: int = 5) -> 
     logger.info("get_category_books: %d books returned for '%s'", len(valid_books), category)
     return valid_books
 
+def get_vibe_recommendations(vibe_prompt: str, count: int = 3) -> list:
+    """
+    Generate a list of real books based on a highly specific natural-language vibe.
+    Returns a list of dicts: [{"title": ..., "author": ..., "reason": ...}, ...]
+    """
+    if not llm_service.is_available():
+        logger.warning("get_vibe_recommendations: no LLM configured")
+        return []
+
+    prompt = PromptTemplates.get_vibe_check_prompt(vibe_prompt, count)
+    
+    # Utilizing the existing LLMService pipeline
+    raw = llm_service.generate_text(
+        prompt,
+        max_tokens=llm_service.config.get('category_books_max_tokens', 600),
+    )
+
+    if not raw:
+        logger.error("get_vibe_recommendations: LLM returned None")
+        return []
+
+    # Use the file's existing robust JSON extractor
+    parsed = _extract_json(raw)
+
+    if not isinstance(parsed, list):
+        logger.error("get_vibe_recommendations: expected JSON array")
+        return []
+
+    # Validate and clean the output
+    valid_books = []
+    for item in parsed:
+        if isinstance(item, dict) and "title" in item and "author" in item:
+            valid_books.append({
+                "title": item["title"],
+                "author": item["author"],
+                "reason": item.get("reason", "This perfectly matches your requested vibe."),
+            })
+
+    logger.info("get_vibe_recommendations: %d books returned for vibe '%s'", len(valid_books), vibe_prompt)
+    return valid_books
 
 @cache_mood_tags
 def get_book_mood_tags_safe(title: str, author: str = "") -> list:
