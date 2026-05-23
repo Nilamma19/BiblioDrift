@@ -3467,7 +3467,7 @@ def sync_library():
             return forbidden_error("Cannot sync to another user's library")
 
         invalid_ids = []
-        for index, item_data in enumerate(raw_items):
+        for index, item_data in enumerate(validated_data.items):
             if not isinstance(item_data, dict):
                 continue
             raw_google_id = item_data.get('id')
@@ -3485,7 +3485,7 @@ def sync_library():
             return validation_error("Invalid Google Books ID format in sync payload")
 
         # Sanitize the items list only after validating Google Books IDs.
-        items = sanitize_payload(raw_items)
+        items = sanitize_payload(validated_data.items)
         
         synced_count = 0
         conflicts = 0
@@ -4551,7 +4551,7 @@ def sync_library():
             return forbidden_error("Cannot sync to another user's library")
 
         invalid_ids = []
-        for index, item_data in enumerate(raw_items):
+        for index, item_data in enumerate(validated_data.items):
             if not isinstance(item_data, dict):
                 continue
             raw_google_id = item_data.get('id')
@@ -4569,7 +4569,7 @@ def sync_library():
             return validation_error("Invalid Google Books ID format in sync payload")
 
         # Sanitize the items list only after validating Google Books IDs.
-        items = sanitize_payload(raw_items)
+        items = sanitize_payload(validated_data.items)
         
         synced_count = 0
         conflicts = 0
