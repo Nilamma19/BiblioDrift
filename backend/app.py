@@ -1333,7 +1333,7 @@ def add_to_library(validated_data):
     from error_responses import handle_exception
     
     try:
-        
+        current_user_id = get_jwt_identity()
         if str(validated_data.user_id) != str(current_user_id):
             return unauthorized_access_error("Cannot access another user's library")
         
@@ -1506,7 +1506,7 @@ def _get_yearly_stats(user_id, year):
 def update_library_item(item_id, validated_data):
     """Update a library item (e.g. move to different shelf)."""
     try:
-        
+        current_user_id = get_jwt_identity()
         item = ShelfItem.query.with_for_update().get(item_id)
         if not item:
             return not_found_error("Library item")
@@ -2108,7 +2108,7 @@ def verify_auth_session():
 @validate_schema(SetGoalRequest)
 def set_reading_goal(validated_data):
     """Set or update annual reading goal."""
-    
+    current_user_id = get_jwt_identity()
     if str(validated_data.user_id) != str(current_user_id):
         return forbidden_error("Unauthorized")
     
@@ -2226,7 +2226,7 @@ def get_leaderboard():
 @validate_schema(CollectionRequest)
 def create_collection(validated_data):
     """Create a new collection."""
-    
+    current_user_id = get_jwt_identity()
     if str(validated_data.user_id) != str(current_user_id):
         return forbidden_error("Unauthorized")
     
@@ -2296,6 +2296,7 @@ def update_collection(collection_id, validated_data):
     """Update a collection."""
     
     try:
+        current_user_id = get_jwt_identity()
         collection = Collection.query.get(collection_id)
         if not collection:
             return jsonify({"error": "Collection not found"}), 404
@@ -2349,10 +2350,12 @@ def delete_collection(collection_id):
 
 @app.route('/api/v1/collections/<int:collection_id>/books', methods=['POST'])
 @jwt_required()
-def add_book_to_collection(collection_id):
+@validate_schema(AddToCollectionRequest)
+def add_book_to_collection(collection_id, validated_data):
     """Add a book to a collection."""
     
     try:
+        current_user_id = get_jwt_identity()
         collection = Collection.query.get(collection_id)
         if not collection:
             return jsonify({"error": "Collection not found"}), 404
