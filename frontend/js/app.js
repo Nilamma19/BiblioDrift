@@ -903,6 +903,7 @@ class BookRenderer {
         if (!modal) return;
 
         document.getElementById('modal-img').src = book.volumeInfo.imageLinks?.thumbnail.replace('http:', 'https:') || '';
+        document.getElementById('modal-img').alt = `Cover of '${book.volumeInfo.title}' by ${book.volumeInfo.authors?.join(', ') || 'Unknown Author'}`;
         document.getElementById('modal-title').textContent = book.volumeInfo.title;
         document.getElementById('modal-author').textContent = book.volumeInfo.authors?.join(", ") || "Unknown Author";
 
@@ -3453,7 +3454,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     card.className = 'progress-overview-card';
                     card.innerHTML = `
                         <div class="progress-card-cover">
-                            ${cover ? `<img src="${cover.replace('http:', 'https:')}" alt="${title}" loading="lazy">` : '<i class="fa-solid fa-book"></i>'}
+                            ${cover ? `<img src="${cover.replace('http:', 'https:')}" alt="Cover of '${title}' by ${author}" loading="lazy">` : '<i class="fa-solid fa-book"></i>'}
                         </div>
                         <div class="progress-card-info">
                             <div class="progress-card-title">${title}</div>
