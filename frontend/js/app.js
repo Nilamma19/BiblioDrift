@@ -668,7 +668,7 @@ class BookRenderer {
         scene.innerHTML = `
             <div class="book" data-id="${escapeHTML(id)}">
                 <div class="book__face book__face--front">
-                    <img src="${safeThumb}" alt="${safeTitle}">
+                    <img src="${safeThumb}" alt="Cover of '${safeTitle}' by ${safeAuthors || 'Unknown Author'}">
                 </div>
                 <div class="book__face book__face--spine" style="background: ${randomSpine}"></div>
                 <div class="book__face book__face--right"></div>
@@ -4167,7 +4167,7 @@ async function triggerOfflineLibraryView() {
                 bookCard.className = 'book-card offline-card';
                 bookCard.innerHTML = `
                     <div class="book-cover-wrapper">
-                        <img src="${book.coverUrl || '../assets/images/default-cover.png'}" alt="${book.title}" class="book-cover-img" />
+                        <img src="${book.coverUrl || '../assets/images/default-cover.png'}" alt="Cover of '${book.title}' by ${book.author || 'Unknown Author'}" class="book-cover-img" />
                     </div>
                     <div class="book-details">
                         <h3>${book.title}</h3>
